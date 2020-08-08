@@ -1,4 +1,4 @@
-/*
+/**
 Programa de automação residencial. Caixa d'água lâmpada e tomada
 */
 
