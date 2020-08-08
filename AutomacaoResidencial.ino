@@ -60,6 +60,7 @@ void setup()
   digitalWrite(Pino_Tomada, HIGH);
 }
 
+//** Protótipo das funções utilizadas */
 void Caixa_Dagua();
 void Avalia_Buzzer();
 void Conta_Palmas();
