@@ -60,6 +60,7 @@ void setup()
   digitalWrite(Pino_Tomada, HIGH);
 }
 
+//** Protótipo das funções utilizadas */
 void Caixa_Dagua();
 void Avalia_Buzzer();
 void Conta_Palmas();
@@ -139,7 +140,7 @@ void Caixa_Dagua()
 }
 
 void Blink_Erro( unsigned short Quantidade_De_Piscadas )
-{// 1 Piscada: Erro na caixa d'água.
+{// 1 Piscada:  Erro na caixa d'água.
  // 2 piscadas: Erro no tanque.
  // 3 Piscadas: Erro no quarto.
   unsigned short i = 0;
@@ -158,8 +159,8 @@ void Avalia_Buzzer()
   {
     Tempo_Em_Que_O_Botao_Foi_Precionado = millis();
   }
-  if( (millis() - Tempo_Em_Que_O_Botao_Foi_Precionado < Tempo_Buzzer_Ligado) && (millis() > 4000) )
-  {//millis() > 4000 elimina o toque ao ligar.
+  if( (millis() - Tempo_Em_Que_O_Botao_Foi_Precionado < Tempo_Buzzer_Ligado) && (millis() > 5000) )
+  {//millis() > 5000 elimina o toque ao ligar.
     digitalWrite(Pino_Buzzer, HIGH);
   }
   else
