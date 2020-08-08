@@ -1,5 +1,7 @@
 "# AutomacaoResidencial"
 
+This code is intended to follow MISRA rules
+
 Projeto de automação residencial.
 Atualmente este projeto consiste em uma placa eletrônica simples baseada no ATMEGA328 do Arduino Uno.
 
