@@ -1,13 +1,13 @@
 /**
-Programa de automação residencial. Caixa d'água lâmpada e tomada
+   Programa de automação residencial. Caixa d'água lâmpada e tomada
 */
 
-//Os pinos dos sensores de nível são pullUp internamente.
-#define Pino_Tanque_Nivel_Baixo                 0 //Tanque Nivel Baixo
-#define Pino_Caixa_Nivel_Baixo                  4 //Caixa Nivel Baixo
-#define Pino_Caixa_Nivel_Alto                   5 //Caixa Nivel Alto
+// Os pinos dos sensores de nível são pullUp internamente.
+#define Pino_Tanque_Nivel_Baixo                 0 // Tanque Nivel Baixo
+#define Pino_Caixa_Nivel_Baixo                  4 // Caixa Nivel Baixo
+#define Pino_Caixa_Nivel_Alto                   5 // Caixa Nivel Alto
 
-#define Tempo_Entre_Analises_Do_Nivel_De_Agua   5100 //deve ser a cada 5.1s
+#define Tempo_Entre_Analises_Do_Nivel_De_Agua   5100 // deve ser a cada 5.1s
 #define Pino_Bomba_Dagua                        11
 #define Pino_Erro                               9
 
