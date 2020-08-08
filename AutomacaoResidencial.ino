@@ -2,21 +2,23 @@
    Programa de automação residencial. Caixa d'água lâmpada e tomada
 */
 
-// Os pinos dos sensores de nível são pullUp internamente.
+/**
+*   Os pinos dos sensores de nível são pullUp internamente.
+*/ 
 #define Pino_Tanque_Nivel_Baixo                 0 // Tanque Nivel Baixo
 #define Pino_Caixa_Nivel_Baixo                  4 // Caixa Nivel Baixo
 #define Pino_Caixa_Nivel_Alto                   5 // Caixa Nivel Alto
 
-#define Tempo_Entre_Analises_Do_Nivel_De_Agua   5100 // deve ser a cada 5.1s
+#define Tempo_Entre_Analises_Do_Nivel_De_Agua   5100 // Deve ser a cada 5.1s
 #define Pino_Bomba_Dagua                        11
 #define Pino_Erro                               9
 
 #define Pino_Buzzer                             12
 #define Pino_Botao_Buzzer                       13
-#define Tempo_Buzzer_Ligado                     4000
+#define Tempo_Buzzer_Ligado                     4000 // 4s
 
 #define Numero_Maximo_De_Deteccoes_No_Deboucing 4
-#define Tempo_Maximo_Entre_Palmas               400
+#define Tempo_Maximo_Entre_Palmas               400 // 0.4s
 #define Tempo_De_Debouncing                     200
 #define Pino_Tomada                             A0
 #define Pino_Lampada                            A5
@@ -35,14 +37,13 @@ unsigned long long Tempo_Primeiro_Som_Do_Ultimo_Debouncing = 0;
 
 void setup()
 {
-  // put your setup code here, to run once:
   pinMode(Pino_Bomba_Dagua, OUTPUT);
   pinMode(Pino_Erro, OUTPUT);
   pinMode(Pino_Caixa_Nivel_Baixo, INPUT_PULLUP);
   pinMode(Pino_Caixa_Nivel_Alto, INPUT_PULLUP);
   pinMode(Pino_Tanque_Nivel_Baixo, INPUT_PULLUP);
 
-//O módulo relé é acionado com nivel LOW.
+  /**O módulo relé é acionado com nivel LOW. */
   digitalWrite(Pino_Bomba_Dagua, HIGH); //NA
   digitalWrite(Pino_Erro, LOW); //LED
 
@@ -51,37 +52,37 @@ void setup()
 
   digitalWrite(Pino_Buzzer, LOW);
 
-  //Serial.begin(9600);
+  /**Serial.begin(9600); */
   pinMode(Pino_Sensor_De_Som, INPUT);
   pinMode(Pino_Lampada, OUTPUT);
   pinMode(Pino_Tomada, OUTPUT);
 
-  digitalWrite(Pino_Lampada, HIGH); //HIGH por causa do relé
+  digitalWrite(Pino_Lampada, HIGH); // HIGH por causa do relé
   digitalWrite(Pino_Tomada, HIGH);
 }
 
-//** Protótipo das funções utilizadas */
+/** Protótipo das funções utilizadas */
 void Caixa_Dagua();
 void Avalia_Buzzer();
 void Conta_Palmas();
 void Blink_Erro( unsigned short Quantidade_De_Piscadas );
 
 void loop()
-{ //loop  
+{ /** loop */ 
   Caixa_Dagua();
   Avalia_Buzzer();
   Conta_Palmas();
 }
 
 void Caixa_Dagua()
-{//Caixa_Dagua 
+{ /** Caixa_Dagua */
   if ( millis() - Previous_Millis > Tempo_Entre_Analises_Do_Nivel_De_Agua )
   {
       bool niveis[3] = {B0, B0, B0};
       niveis[2] = digitalRead(Pino_Caixa_Nivel_Baixo);
       niveis[1] = digitalRead(Pino_Caixa_Nivel_Alto);
       niveis[0] = digitalRead(Pino_Tanque_Nivel_Baixo);
-      /*  1 = tem água.
+      /**  1 = tem água.
       B111 = 7
       B110 = 6
       B101 = 5
@@ -94,7 +95,7 @@ void Caixa_Dagua()
       switch ( (unsigned short) niveis ) // Cast to int (switch does not interpret booleans)
              {
               case 7: // Todos as portas em nível alto, ou seja, sensores abertos e submersos. Caixa e tanque cheios.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); //Desliga Bomba. Rele deve estar como NA.
+              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
               break;
 
               case 6: // Caixa cheia e tanque vazio.
@@ -108,7 +109,7 @@ void Caixa_Dagua()
               break;
 
               case 4: // Caixa ainda com líquido e tanque vazio.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); //Desliga Bomba. Rele deve estar como NA.
+              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
               Blink_Erro(2);
               break;
 
@@ -148,9 +149,9 @@ void Blink_Erro( unsigned short Quantidade_De_Piscadas )
   { i++;
     digitalWrite(Pino_Erro, (State[0])? HIGH : LOW);
     State[0] = !State[0];
-    delay(500); //500ms
+    delay(500); // 500ms
   } while (i < Quantidade_De_Piscadas*2 );
-  delay (500); //500ms
+  delay (500);
 }
 
 void Avalia_Buzzer()
@@ -159,8 +160,12 @@ void Avalia_Buzzer()
   {
     Tempo_Em_Que_O_Botao_Foi_Precionado = millis();
   }
+  else
+  { // Do nothing
+  }
+  
   if( (millis() - Tempo_Em_Que_O_Botao_Foi_Precionado < Tempo_Buzzer_Ligado) && (millis() > 5000) )
-  {//millis() > 5000 elimina o toque ao ligar.
+  { // millis() > 5000 elimina o toque ao ligar.
     digitalWrite(Pino_Buzzer, HIGH);
   }
   else
@@ -172,7 +177,7 @@ void Avalia_Buzzer()
 void Conta_Palmas()
 {
  temPalmas = digitalRead(Pino_Sensor_De_Som);
- //Serial.println( temPalmas );
+ // Serial.println( temPalmas );
  if( temPalmas == 1 && Conta_Som_Durante_Debouncing == 0 )
  { Primeiro_Som = 1;
    Tempo_Primeiro_Som_Do_Ultimo_Debouncing = millis();
@@ -183,10 +188,10 @@ void Conta_Palmas()
       { Conta_Som_Durante_Debouncing++;
       }
    }
-    //Se já passou o tempo de debouncing:
+    // Se já passou o tempo de debouncing:
    if( millis() - Tempo_Primeiro_Som_Do_Ultimo_Debouncing > Tempo_De_Debouncing )
     { Primeiro_Som = 0;
-      if( Conta_Som_Durante_Debouncing <= Numero_Maximo_De_Deteccoes_No_Deboucing )//Garante que um som contínuo (múltiplas detecções) não seja trigger
+      if( Conta_Som_Durante_Debouncing <= Numero_Maximo_De_Deteccoes_No_Deboucing ) // Garante que um som contínuo (múltiplas detecções) não seja trigger
       { Palmas++;
       }
       else //Detecto ruino (barulho continuo, caracterizado po multiplas detecções durante o tempo de debouncing). Descarto as palmas acumuladas.
@@ -199,13 +204,13 @@ void Conta_Palmas()
  if ( millis() - Tempo_Primeiro_Som_Do_Ultimo_Debouncing > Tempo_Maximo_Entre_Palmas )
  { switch ( Palmas )
    {
-     case 0:// zero palmas
+     case 0: // Zero palmas
             break;
      case 1:
             Palmas = 0;
             break;
                 
-     case 2://duas palmas
+     case 2: // Duas palmas
             Palmas = 0;
             digitalWrite( Pino_Lampada, (State[1])? HIGH : LOW );
             State[1] = !State[1];
