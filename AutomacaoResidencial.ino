@@ -56,7 +56,7 @@ void setup()
   pinMode(Pino_Lampada, OUTPUT);
   pinMode(Pino_Tomada, OUTPUT);
 
-  digitalWrite(Pino_Lampada, HIGH); //HIGH por causa do rele
+  digitalWrite(Pino_Lampada, HIGH); //HIGH por causa do relé
   digitalWrite(Pino_Tomada, HIGH);
 }
 
@@ -90,20 +90,20 @@ void Caixa_Dagua()
       B001 = 1
       B000 = 0
       */
-      switch ( (unsigned short) niveis )
+      switch ( (unsigned short) niveis ) // Cast to int (switch does not interpret booleans)
              {
               case 7: // Todos as portas em nível alto, ou seja, sensores abertos e submersos. Caixa e tanque cheios.
               digitalWrite(Pino_Bomba_Dagua, HIGH); //Desliga Bomba. Rele deve estar como NA.
               break;
 
-              case 6: //Caixa cheia e tanque vazio.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); //Desliga Bomba. Rele deve estar como NA.
+              case 6: // Caixa cheia e tanque vazio.
+              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
               Blink_Erro(2);
               break;
 
               case 5:
-              //Somente a boia de nível da caixa d'água alto não está aberta=1=submersa. Caixa contém pouco líquido. Pode estar enchendo ou esvaziando.
-              //Do nothing
+              // Somente a boia de nível da caixa d'água alto não está aberta=1=submersa. Caixa contém pouco líquido. Pode estar enchendo ou esvaziando.
+              // Do nothing
               break;
 
               case 4: // Caixa ainda com líquido e tanque vazio.
@@ -111,30 +111,30 @@ void Caixa_Dagua()
               Blink_Erro(2);
               break;
 
-              case 3: //Somente a boia de nível da caixa d'água baixo fechada, não submersa. Erro porque aboia nível alto da caixa está aberta e a de nível baixo fechada.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); //Desliga Bomba. Rele deve estar como NA.
+              case 3: // Somente a boia de nível da caixa d'água baixo fechada, não submersa. Erro porque aboia nível alto da caixa está aberta e a de nível baixo fechada.
+              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
               Blink_Erro(1);
               break;
 
-              case 2: //Tanque vazio. Erro porque o sensor nível alto está fechado e o baixo aberto.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); //Desliga Bomba. Rele deve estar como NA.
+              case 2: // Tanque vazio. Erro porque o sensor nível alto está fechado e o baixo aberto.
+              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
               Blink_Erro(1);
               Blink_Erro(2);
               break;
 
-              case 1: //Caixa Vazia. Tanque cheio. Somente nessa condição a bomba d'água é ligada.
-              digitalWrite(Pino_Bomba_Dagua, LOW); //Liga Bomba. Rele deve estar como NA.
+              case 1: // Caixa Vazia. Tanque cheio. Somente nessa condição a bomba d'água é ligada.
+              digitalWrite(Pino_Bomba_Dagua, LOW); // Liga Bomba. Rele deve estar como NA.
               break;
 
               default: // B000. Tudo vazio.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); //Desliga Bomba. Rele deve estar como NA.
+              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
               Blink_Erro(2);
               break;
              }
       Previous_Millis = millis();
   }
   else
-  { //Do nothing
+  { // Do nothing
   }
 }
 
