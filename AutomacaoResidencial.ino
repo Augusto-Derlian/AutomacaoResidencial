@@ -5,34 +5,34 @@
 /**
 *   Os pinos dos sensores de nível são pullUp internamente.
 */ 
-#define Pino_Tanque_Nivel_Baixo                 0 // Tanque Nivel Baixo
-#define Pino_Caixa_Nivel_Baixo                  4 // Caixa Nivel Baixo
-#define Pino_Caixa_Nivel_Alto                   5 // Caixa Nivel Alto
+#define Pino_Tanque_Nivel_Baixo 0 // Tanque Nivel Baixo
+#define Pino_Caixa_Nivel_Baixo 4 // Caixa Nivel Baixo
+#define Pino_Caixa_Nivel_Alto 5 // Caixa Nivel Alto
 
-#define Tempo_Entre_Analises_Do_Nivel_De_Agua   5100 // Deve ser a cada 5.1s
-#define Pino_Bomba_Dagua                        11
-#define Pino_Erro                               9
+#define Tempo_Entre_Analises_Do_Nivel_De_Agua 5100 // Deve ser a cada 5.1s
+#define Pino_Bomba_Dagua 11
+#define Pino_Erro 9
 
-#define Pino_Buzzer                             12
-#define Pino_Botao_Buzzer                       13
-#define Tempo_Buzzer_Ligado                     4000 // 4s
+#define Pino_Buzzer 12
+#define Pino_Botao_Buzzer 13
+#define Tempo_Buzzer_Ligado 4000 // 4s
 
 #define Numero_Maximo_De_Deteccoes_No_Deboucing 4
-#define Tempo_Maximo_Entre_Palmas               400 // 0.4s
-#define Tempo_De_Debouncing                     200
-#define Pino_Tomada                             A0
-#define Pino_Lampada                            A5
-#define Pino_Sensor_De_Som                      8
+#define Tempo_Maximo_Entre_Palmas  400 // 0.4s
+#define Tempo_De_Debouncing 200
+#define Pino_Tomada A0
+#define Pino_Lampada A5
+#define Pino_Sensor_De_Som 8
 
-bool               State[3] =                                {B111};
-unsigned long      Previous_Millis =                         0;
+bool State[3] = {B111};
+unsigned long Previous_Millis = 0;
 
-unsigned long long Tempo_Em_Que_O_Botao_Foi_Precionado =     0;
+unsigned long long Tempo_Em_Que_O_Botao_Foi_Precionado = 0;
 
-boolean            temPalmas =                               false;
-boolean            Primeiro_Som =                            0;
-short int          Palmas =                                  0;
-short              Conta_Som_Durante_Debouncing =            0;
+boolean temPalmas = false;
+boolean Primeiro_Som = 0;
+short int Palmas = 0;
+short Conta_Som_Durante_Debouncing = 0;
 unsigned long long Tempo_Primeiro_Som_Do_Ultimo_Debouncing = 0;
 
 void setup()
@@ -52,7 +52,7 @@ void setup()
 
   digitalWrite(Pino_Buzzer, LOW);
 
-  /**Serial.begin(9600); */
+  //Serial.begin(9600);
   pinMode(Pino_Sensor_De_Som, INPUT);
   pinMode(Pino_Lampada, OUTPUT);
   pinMode(Pino_Tomada, OUTPUT);
@@ -69,6 +69,8 @@ void Blink_Erro( unsigned short Quantidade_De_Piscadas );
 
 void loop()
 { /** loop */ 
+  //Serial.print( "Estado do botao do buzzer: " );
+  //Serial.println( digitalRead(Pino_Botao_Buzzer) );
   Caixa_Dagua();
   Avalia_Buzzer();
   Conta_Palmas();
@@ -78,62 +80,54 @@ void Caixa_Dagua()
 { /** Caixa_Dagua */
   if ( millis() - Previous_Millis > Tempo_Entre_Analises_Do_Nivel_De_Agua )
   {
-      bool niveis[3] = {B0, B0, B0};
-      niveis[2] = digitalRead(Pino_Caixa_Nivel_Baixo);
-      niveis[1] = digitalRead(Pino_Caixa_Nivel_Alto);
-      niveis[0] = digitalRead(Pino_Tanque_Nivel_Baixo);
-      /**  1 = tem água.
-      B111 = 7
-      B110 = 6
-      B101 = 5
-      B100 = 4 
-      B011 = 3
-      B010 = 2
-      B001 = 1
-      B000 = 0
-      */
-      switch ( (unsigned short) niveis ) // Cast to int (switch does not interpret booleans)
-             {
-              case 7: // Todos as portas em nível alto, ou seja, sensores abertos e submersos. Caixa e tanque cheios.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
-              break;
+      /**  1 = tem água. */
+    if     ( digitalRead(Pino_Caixa_Nivel_Baixo) && digitalRead(Pino_Caixa_Nivel_Alto) && digitalRead(Pino_Tanque_Nivel_Baixo) ) // Todos as portas em nível alto, ou seja, sensores abertos e submersos. Caixa e tanque cheios.
+    { digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
+    }
 
-              case 6: // Caixa cheia e tanque vazio.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
-              Blink_Erro(2);
-              break;
+    else if( digitalRead(Pino_Caixa_Nivel_Baixo) && digitalRead(Pino_Caixa_Nivel_Alto) && !digitalRead(Pino_Tanque_Nivel_Baixo) ) // Caixa cheia e tanque vazio.
+    { digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
+      Blink_Erro(2);
+    }
 
-              case 5:
-              // Somente a boia de nível da caixa d'água alto não está aberta=1=submersa. Caixa contém pouco líquido. Pode estar enchendo ou esvaziando.
-              // Do nothing
-              break;
+    else if( digitalRead(Pino_Caixa_Nivel_Baixo) && !digitalRead(Pino_Caixa_Nivel_Alto) && digitalRead(Pino_Tanque_Nivel_Baixo) )
+    { // Somente a boia de nível da caixa d'água alto não está aberta=1=submersa. Caixa contém pouco líquido. Pode estar enchendo ou esvaziando.
+      // Do nothing
+    }
 
-              case 4: // Caixa ainda com líquido e tanque vazio.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
-              Blink_Erro(2);
-              break;
+    else if( digitalRead(Pino_Caixa_Nivel_Baixo) && !digitalRead(Pino_Caixa_Nivel_Alto) && !digitalRead(Pino_Tanque_Nivel_Baixo) ) // Caixa ainda com líquido e tanque vazio.
+    { digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
+      Blink_Erro(2);
+    }
 
-              case 3: // Somente a boia de nível da caixa d'água baixo fechada, não submersa. Erro porque aboia nível alto da caixa está aberta e a de nível baixo fechada.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
-              Blink_Erro(1);
-              break;
+    else if ( !digitalRead(Pino_Caixa_Nivel_Baixo) && digitalRead(Pino_Caixa_Nivel_Alto) && digitalRead(Pino_Tanque_Nivel_Baixo) ) // Somente a boia de nível da caixa d'água baixo fechada, não submersa. Erro porque aboia nível alto da caixa está aberta e a de nível baixo fechada.
+    { digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
+      Blink_Erro(1);
+    }
 
-              case 2: // Tanque vazio. Erro porque o sensor nível alto está fechado e o baixo aberto.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
-              Blink_Erro(1);
-              Blink_Erro(2);
-              break;
+    else if( !digitalRead(Pino_Caixa_Nivel_Baixo) && digitalRead(Pino_Caixa_Nivel_Alto) && !digitalRead(Pino_Tanque_Nivel_Baixo) ) // Tanque vazio. Erro porque o sensor nível alto está fechado e o baixo aberto.
+    { digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
+      Blink_Erro(1);
+      Blink_Erro(2);
+    }
 
-              case 1: // Caixa Vazia. Tanque cheio. Somente nessa condição a bomba d'água é ligada.
-              digitalWrite(Pino_Bomba_Dagua, LOW); // Liga Bomba. Rele deve estar como NA.
-              break;
+    else if ( !digitalRead(Pino_Caixa_Nivel_Baixo) && !digitalRead(Pino_Caixa_Nivel_Alto) && digitalRead(Pino_Tanque_Nivel_Baixo) ) // Caixa Vazia. Tanque cheio. Somente nessa condição a bomba d'água é ligada.
+    { digitalWrite(Pino_Bomba_Dagua, LOW); // Liga Bomba. Rele deve estar como NA.
+    }
 
-              default: // B000. Tudo vazio.
-              digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
-              Blink_Erro(2);
-              break;
-             }
-      Previous_Millis = millis();
+    else if ( !digitalRead(Pino_Caixa_Nivel_Baixo) && !digitalRead(Pino_Caixa_Nivel_Alto) && !digitalRead(Pino_Tanque_Nivel_Baixo) ) // B000. Tudo vazio.
+    { digitalWrite(Pino_Bomba_Dagua, HIGH); // Desliga Bomba. Rele deve estar como NA.
+      Blink_Erro(2);
+    }
+              
+    else
+    { // Do nothing
+    }
+    //Serial.print("A leitura de nivel eh: ");
+    //Serial.print(digitalRead(Pino_Caixa_Nivel_Baixo));
+    //Serial.print(digitalRead(Pino_Caixa_Nivel_Alto));
+    //Serial.println(digitalRead(Pino_Tanque_Nivel_Baixo));       
+    Previous_Millis = millis();
   }
   else
   { // Do nothing
