@@ -167,7 +167,7 @@ void Avalia_Buzzer()
     digitalWrite(Pino_Buzzer, LOW);
   }
 }
-
+// Esta funcao conta a quantidade de palmas do usuario.
 void Conta_Palmas()
 {
  temPalmas = digitalRead(Pino_Sensor_De_Som);
